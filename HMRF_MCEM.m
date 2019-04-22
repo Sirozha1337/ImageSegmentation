@@ -17,17 +17,22 @@
 %   beta: оцененное значение beta
 %   mus: оцененное значение mus
 %   kappas: оцененное значение kappas
-function [sample, beta, mus, kappas] = HMRF_MCEM(data, dim, k, beta, mus, kappas, burn_in, sample_num, max_iter, neighbours_count)
+function [sample, beta, mus, kappas] = HMRF_MCEM(data, dim, k, beta, mus, kappas, burn_in, sample_num, max_iter, neighbours_count, segment_init)
 
 p = size(data, 2);
 
-for i=1:max_iter
-    % генерируем начальную конфигурацию
+if(nargin < 11)
     segment_init = randi(k, dim);
+end
+
+for i=1:max_iter
+    fprintf('\HRMF MCEM Iteration: %d of %d\n',i,max_iter);
     % генерируем выборку из схемы Гиббса 
     [samples] = GibbsSamplerVMF(data, segment_init, burn_in, sample_num, k, p, beta, mus, kappas, neighbours_count);
     % подстраиваем параметры
     [beta, mus, kappas] = EstimateParameters(data, samples, k, p, beta, mus, kappas);
+    % генерируем начальную конфигурацию
+    segment_init = reshape(samples(end, :), dim);
 end
 
 sample = reshape(samples(end, :), dim);
