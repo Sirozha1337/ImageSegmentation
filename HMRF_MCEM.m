@@ -26,7 +26,7 @@ if(nargin < 11)
 end
 
 for i=1:max_iter
-    fprintf('\HRMF MCEM Iteration: %d of %d\n',i,max_iter);
+    fprintf('\tHRMF MCEM Iteration: %d of %d\n',i,max_iter);
     % генерируем выборку из схемы Гиббса 
     [samples] = GibbsSamplerVMF(data, segment_init, burn_in, sample_num, k, p, beta, mus, kappas, neighbours_count);
     % подстраиваем параметры
