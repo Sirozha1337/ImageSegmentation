@@ -6,7 +6,7 @@ k = 3;
 % параметры для vMF
 kappas = repmat(10, 1, k);
 kappas_restore = kappas;
-mus = [[-0.57, 0.57, 0.57];[0, -1, 0];[1, 0, 0];];
+mus = [[-0.57, 0.57, 0.57];[0, -1, 0]; [1, 0, 0];];
 mus_restore = mus;
 theta1.kappa = 10;
 theta1.mu = mus(1, :)';
@@ -41,44 +41,15 @@ data(Sample==3, :) = clust3';
 % imagesc(reshape(Sample, [Size, Size])); figure(); imagesc(reshape(mdata, [Size, Size]));
 
 % задаем начальные mu отличные от тех, с которыми генерировалась выборка
-mus = [[0, 0, 1];[0, 1, 0];[-1, 0, 0]];
-for i=1:5
-    % считаем вероятности
-    [probs, logprobs] = CalculateLikelihoodProbabilities(data, k, kappas, mus);
-    % получаем MLE
-    segment_init = MLE(data, probs);
-    % трансформируем сегментацию в двумерную матрицу
-    segment_init = reshape(segment_init, [Size, Size]);
-    % ищем MAP-оценку
-    %[map, energy] = MRF_MAP_GraphCutABSwap(segment_init, logprobs, 2, k, 10, 4);
-    [map, energy] = MRF_MAP_GraphCutAExpansion(segment_init, logprobs, 2, k, 10, 4);
-    % настраиваем параметры
-    [~, mus, kappas] = EstimateParametersOneSample(data, energy, k, p, 2, mus, kappas);
-end
-% сохраняем посчитанные mu, kappa и финальную сегментацию
-mus_em = mus;
-kappas_em = kappas;
-final_segm_hmrf_em = map;
+%mus = [[0, 0, 1];[0, 1, 0];[-1, 0, 0]];
+
+[final_segm_hmrf_em, beta_em, mus_em, kappas_em] = HMRF_EM(data, [Size, Size], k, 2, mus, kappas, 10, 5, 4, 'expansion');
 
 % возвращаем оригинальные kappa и устанавливаем mu
 kappas = kappas_restore;
-mus = [[0, 0, 1];[0, 1, 0];[-1, 0, 0]];
-for i=1:5
-    % считаем вероятности
-    [probs, ~] = CalculateLikelihoodProbabilities(data, k, kappas, mus);
-    % получаем начальное приближение
-    segment_init = MLE(data, probs);
-    % трансформируем сегментацию в двумерную матрицу
-    segment_init = reshape(segment_init, [Size, Size]);
-    % ищем MAP-оценку 
-    [samples] = GibbsSamplerVMF(data, segment_init, 10, 10, k, p, 2, mus, kappas, 4);
-    % подстраиваем параметры
-    [~, mus, kappas] = EstimateParameters(data, samples, k, p, 2, mus, kappas);
-end
+mus = mus_restore;
 % сохраняем посчитанные mu, kappa и финальную сегментацию
-mus_mcem = mus;
-kappas_mcem = kappas;
-final_segm_hmrf_mcem = reshape(samples(end, :), [Size, Size]);
+[final_segm_hmrf_mcem, beta_mcem, mus_mcem, kappas_mcem] = HMRF_MCEM(data, [Size, Size], k, 2, mus, kappas, 10, 10, 5, 4);
 
 % Отображение GroundTruth и результатов
 imagesc(reshape(Sample, [Size, Size]));
@@ -86,4 +57,7 @@ figure();
 imagesc(final_segm_hmrf_em);
 figure();
 imagesc(final_segm_hmrf_mcem);
+
+dsc_em = SimilarityScore(Sample, final_segm_hmrf_em, k);
+dsc_mcem = SimilarityScore(Sample, final_segm_hmrf_mcem, k);
 
