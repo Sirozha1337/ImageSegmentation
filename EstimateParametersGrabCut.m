@@ -4,14 +4,12 @@
 % Y: матрица размерности MxN
 % k: количество классов сегментации
 % p: размерность данных
-% beta: текущее значение параметра модели Поттса
 % mu: текущая матрица параметров для vMF
 % kappa: текущий вектор параметров для vMF
 %---output--------------------------------------------------------
-% beta: новое значение параметра, скаляр
 % mu: новые значения параметров, матрица LxP
 % kappa: новые значения параметров, вектор 1xL
-function [beta, mu, kappa] = EstimateParametersGrabCut(X, Y, k, p, beta, mu, kappa)
+function [mu, kappa] = EstimateParametersGrabCut(X, Y, k, p, mu, kappa)
 
 for l=1:k
     R = sum(X(Y(:)==l, :));

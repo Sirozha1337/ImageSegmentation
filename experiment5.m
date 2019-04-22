@@ -13,13 +13,13 @@ InitY = randi(k, [Size, Size]);
 [data, gt]=GenerateSynteticData(InitY, p, k, 2, mus, kappas, 20, 4);
 
 % старт со случайной конфигурации
-[final_segm_rand, beta_rand, mus_rand, kappas_rand] = Grab_Cut(data, InitY, k, 2, close_mus, close_kappas, 5, 5, 4);
+[final_segm_rand, mus_rand, kappas_rand] = Grab_Cut(data, InitY, k, 10, 40, close_mus, close_kappas, 5, 5, 4);
 
 % старт с MLE
 [probs, ~] = CalculateLikelihoodProbabilities(data, k, close_kappas, close_mus);
 mle = MLE(zeros([Size * Size, 1]), probs);
 mle = reshape(mle, [Size, Size]);
-[final_segm_mle, beta_mle, mus_mle, kappas_mle] = Grab_Cut(data, mle, k, 2, close_mus, close_kappas, 5, 5, 4);
+[final_segm_mle, mus_mle, kappas_mle] = Grab_Cut(data, mle, k, 10, 40, close_mus, close_kappas, 5, 5, 4);
 
 % старт с kmeans
 segment_init_kmeans = kmeans(data, k, 'MaxIter',500);
@@ -33,7 +33,7 @@ for i=1:k
     mus_kmeans(i, :) = squeeze(theta.mu);
     kappas_kmeans(i) = theta.kappa;
 end
-[final_segm_kmeans, beta_kmeans, mus_kmeans, kappas_kmeans] = Grab_Cut(data, segment_init_kmeans, k, 2, mus_kmeans, kappas_kmeans, 5, 5, 4);
+[final_segm_kmeans, mus_kmeans, kappas_kmeans] = Grab_Cut(data, segment_init_kmeans, k, 10, 40, mus_kmeans, kappas_kmeans, 5, 5, 4);
 
 dsc_rand = SimilarityScore(gt, final_segm_rand, k);
 dsc_mle = SimilarityScore(gt, final_segm_mle, k);
