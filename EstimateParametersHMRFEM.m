@@ -11,7 +11,7 @@
 % beta: новое значение параметра, скаляр
 % mu: новые значения параметров, матрица LxP
 % kappa: новые значения параметров, вектор 1xL
-function [beta, mu, kappa] = EstimateParametersOneSample(X, posterior, k, p, beta, mu, kappa)
+function [beta, mu, kappa] = EstimateParametersHMRFEM(X, posterior, k, p, beta, mu, kappa)
 
 for l=1:k
     R = posterior(l,:) * X;

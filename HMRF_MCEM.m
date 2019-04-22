@@ -30,7 +30,7 @@ for i=1:max_iter
     % генерируем выборку из схемы Гиббса 
     [samples] = GibbsSamplerVMF(data, segment_init, burn_in, sample_num, k, p, beta, mus, kappas, neighbours_count);
     % подстраиваем параметры
-    [beta, mus, kappas] = EstimateParameters(data, samples, k, p, beta, mus, kappas);
+    [beta, mus, kappas] = EstimateParametersHMRFMCEM(data, samples, k, p, beta, mus, kappas);
     % генерируем начальную конфигурацию
     segment_init = reshape(samples(end, :), dim);
 end

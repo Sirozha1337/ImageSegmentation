@@ -38,5 +38,5 @@ for i=1:max_iter
             error('Unknown method')
     end
     % настраиваем параметры
-    [beta, mus, kappas] = EstimateParametersOneSample(data, energy, k, p, beta, mus, kappas);
+    [beta, mus, kappas] = EstimateParametersHMRFEM(data, energy, k, p, beta, mus, kappas);
 end

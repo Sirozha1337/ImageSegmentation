@@ -11,7 +11,7 @@
 % beta: новое значение параметра, скаляр
 % mu: новые значения параметров, матрица LxP
 % kappa: новые значения параметров, вектор 1xL
-function [beta, mu, kappa] = EstimateParameters(X, Y, k, p, beta, mu, kappa)
+function [beta, mu, kappa] = EstimateParametersHMRFMCEM(X, Y, k, p, beta, mu, kappa)
 
 M = size(Y, 1);
 
