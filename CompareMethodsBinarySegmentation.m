@@ -1,14 +1,14 @@
 
-image = imread('data/carriage.png');
-gt_image = imread('data/carriage_gt.png');
+image = imread('data/a_8049.jpg');
+gt_image = imread('data/a_8049_gt.jpg');
 gt = zeros([size(gt_image,1), size(gt_image,2)]);
 gt(gt_image(:, :, 1)==255 & gt_image(:, :, 2)==0 & gt_image(:, :, 3)==0)=1;
 gt(gt==0)=2;
 
-fore_x = 70:120;
-fore_y = 80:130;
-back_x = 240:290;
-back_y = 110:160;
+fore_x = 181:280;
+fore_y = 221:320;
+back_x = 116:215;
+back_y = 1:100;
 
 background_area = image(back_y, back_x, :);
 foreground_area = image(fore_y, fore_x, :);
@@ -53,7 +53,7 @@ dsc_sa = SimilarityScore(gt, map4, 2);
 
 imagesc([map1, map2, map3, map4]);
 
-mask = map2 == 2;
+mask = map1 == 2;
 image_no_back = bsxfun(@times, image, cast(mask,class(image)));
 imshow(image_no_back);
 
