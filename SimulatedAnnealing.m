@@ -6,11 +6,18 @@ for i=1:max_iter
     t = (eta ^ (i - 1)) * t0;
     fprintf('\tSimulated Annealing Iteration: %d of %d\n', i, max_iter);
     for j=pointlist
-        lik = zeros([1, k]);
-        for l=1:k
-            lik(l) = exp((-logprobs(l, j) + sum(beta * (neighbours(:, j) ~= l)))/t);
+        new_label = randi([1,k], 1, 1);
+        phi1 = (logprobs(segment(j), j) + sum(beta * (neighbours(:, j) ~= segment(j))));
+        phi2 = (logprobs(new_label, j) + sum(beta * (neighbours(:, j) ~= new_label)));
+        if phi1 > phi2
+            segment(j) = new_label;
+        else
+            u = rand();
+            p = exp((phi1-phi2)/t);
+            if u < p
+                segment(j) = new_label;
+            end
         end
-        segment(j) = randsample(1:l, 1, true, lik);
     end
 end
 
