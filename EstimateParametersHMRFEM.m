@@ -11,16 +11,16 @@
 % beta: новое значение параметра, скаляр
 % mu: новые значения параметров, матрица LxP
 % kappa: новые значения параметров, вектор 1xL
-function [beta, mu, kappa] = EstimateParametersHMRFEM(X, posterior, k, p, beta, mu, kappa)
+function [beta, mu, kappa] = EstimateParametersHMRFEM(X, Y, posterior, k, p, beta, mu, kappa)
 
 for l=1:k
-    R = posterior(l,:) * X;
+    R = posterior(l,Y==l) * X(Y==l,:);
     Rlen = sqrt(sum(R .^ 2));
     if Rlen ~= 0
         mu(l, :) = R / Rlen;
     end
     
-    eqn = @(x) besseli(p/2, x)/besseli(p/2-1,x) * sum(posterior(l,:)) - Rlen;
+    eqn = @(x) besseli(p/2, x)/besseli(p/2-1,x) * sum(posterior(l,Y==l)) - Rlen;
     initval = kappa(l);
     if isnan(eqn(initval))
         fprintf('WARNING: function is NaN in initial point\n')

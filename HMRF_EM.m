@@ -22,7 +22,6 @@
 function [sample, beta, mus, kappas] = HMRF_EM(data, dim, k, beta, mus, kappas, map_iter, max_iter, neighbours_count, method)
 
 p = size(data, 2);
-
 for i=1:max_iter
     % считаем вероятности
     [~, logprobs] = CalculateLikelihoodProbabilities(data, k, kappas, mus);
@@ -38,5 +37,5 @@ for i=1:max_iter
             error('Unknown method')
     end
     % настраиваем параметры
-    [beta, mus, kappas] = EstimateParametersHMRFEM(data, energy, k, p, beta, mus, kappas);
+    [beta, mus, kappas] = EstimateParametersHMRFEM(data, sample, energy, k, p, beta, mus, kappas);
 end
