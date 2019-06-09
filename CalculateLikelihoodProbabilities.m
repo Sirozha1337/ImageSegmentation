@@ -1,4 +1,12 @@
-
+%% Calculates likelihood probabilities and log-likelihood probabilites for von Mises-Fisher distribution
+%---input---------------------------------------------------------
+% data: for which to calculate probabilities, NxP
+% k: number of classes
+% kappas: vMF distribution parameters, Kx1
+% mus: vMF ditribution parameters, KxP
+%---output--------------------------------------------------------
+% probs: likelihood probabilities, LxN
+% logprobs: loglikelihood probabilities, LxN
 function [probs,logprobs] = CalculateLikelihoodProbabilities(data, k, kappas, mus)
 
 probs = zeros([k, size(data, 1)]);
