@@ -13,14 +13,14 @@
 %    close_mu = mus(i, :) + rand(size(mus(i, :)));
 %    close_mus(i, :) = close_mu / sqrt(sum(close_mu .^ 2));
 %end
+% Generate starting configuration
+%InitY = randi(k, [Size, Size]);
+%[data, gt]=GenerateSynteticData(InitY, p, k, 2, mus, kappas, 20, 4);
+%imwrite(reshape(data, [Size, Size, 3]), 'data/generated.png');
+%save('good_params','mus','kappas', 'close_mus', 'close_kappas', 'data', 'gt')
 
 % Use pre-generated params for reproduceability 
 load('good_params')
-
-% Generate starting configuration
-InitY = randi(k, [Size, Size]);
-[data, gt]=GenerateSynteticData(InitY, p, k, 2, mus, kappas, 20, 4);
-%imwrite(reshape(data, [Size, Size, 3]), 'data/generated.png');
 
 % MCEM
 [final_segm_mcem, beta_mcem, mus_mcem, kappas_mcem, ...
@@ -85,7 +85,6 @@ s_dsc_swap = SimpleSimilarityScore(gt, final_segm_swap, k);
 %SaveImage(reshape(final_segm_mcem, [Size,Size]), 'data/sim_mcem.png');
 %SaveImage(reshape(final_segm_grc, [Size,Size]), 'data/sim_grc.png');
 %SaveImage(mean(reshape(data, [Size,Size, p]), 3), 'data/sim_data.png');
-%save('good_params','mus','kappas', 'close_mus', 'close_kappas')
 
 % Saving plots
 %fig = PlotDistanceToTruth(mus, all_mus_mcem, 1, 'Distance to real mu', 'HMRF-MCEM');

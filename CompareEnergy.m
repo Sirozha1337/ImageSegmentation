@@ -1,10 +1,6 @@
 % Load previously saved params
 load('good_params')
 
-% Generate starting configuration
-InitY = randi(k, [Size, Size]);
-[data, gt]=GenerateSynteticData(InitY, p, k, 2, mus, kappas, 20, 4);
-
 % Calculate negative loglikelihood probabilities
 [probs, logprobs] = CalculateLikelihoodProbabilities(data, k, kappas, mus);
 
