@@ -17,9 +17,11 @@
 %   beta: оцененное значение beta
 %   mus: оцененное значение mus
 %   kappas: оцененное значение kappas
-function [sample, beta, mus, kappas] = HMRF_MCEM(data, dim, k, beta, mus, kappas, burn_in, sample_num, max_iter, neighbours_count, segment_init)
+function [sample, beta, mus, kappas, all_mus, all_kappas] = HMRF_MCEM(data, dim, k, beta, mus, kappas, burn_in, sample_num, max_iter, neighbours_count, segment_init)
 
 p = size(data, 2);
+all_mus = zeros([max_iter, size(mus)]);
+all_kappas = zeros([max_iter, size(kappas)]);
 
 if(nargin < 11)
     segment_init = randi(k, dim);
@@ -31,6 +33,8 @@ for i=1:max_iter
     [samples] = GibbsSamplerVMF(data, segment_init, burn_in, sample_num, k, p, beta, mus, kappas, neighbours_count);
     % подстраиваем параметры
     [beta, mus, kappas] = EstimateParametersHMRFMCEM(data, samples, k, p, beta, mus, kappas);
+    all_mus(i, :, :) = mus;
+    all_kappas(i, :) = kappas;
     % генерируем начальную конфигурацию
     segment_init = reshape(samples(end, :), dim);
 end

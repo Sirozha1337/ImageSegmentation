@@ -19,9 +19,11 @@
 %   beta: оцененное значение beta
 %   mus: оцененное значение mus
 %   kappas: оцененное значение kappas
-function [sample, beta, mus, kappas] = HMRF_EM(data, dim, k, beta, mus, kappas, map_iter, max_iter, neighbours_count, method)
+function [sample, beta, mus, kappas, all_mus, all_kappas] = HMRF_EM(data, dim, k, beta, mus, kappas, map_iter, max_iter, neighbours_count, method)
 
 p = size(data, 2);
+all_mus = zeros([max_iter, size(mus)]);
+all_kappas = zeros([max_iter, size(kappas)]);
 for i=1:max_iter
     % считаем вероятности
     [~, logprobs] = CalculateLikelihoodProbabilities(data, k, kappas, mus);
@@ -38,4 +40,6 @@ for i=1:max_iter
     end
     % настраиваем параметры
     [beta, mus, kappas] = EstimateParametersHMRFEM(data, sample, energy, k, p, beta, mus, kappas);
+    all_mus(i, :, :) = mus;
+    all_kappas(i, :) = kappas;
 end
