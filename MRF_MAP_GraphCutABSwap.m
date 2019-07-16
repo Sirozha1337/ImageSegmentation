@@ -58,9 +58,9 @@ for i=1:MAP_iter
             beta_prob = logprobs(beta, ind);
             
             % construct vector of weights
-            weights = [ (alpha_prob + sum(b' .* (all_neighbours(:, ind) ~= alpha) .* (all_neighbours(:, ind) ~= beta)))' + 5000; ...
-                        (beta_prob  + sum(b' .* (all_neighbours(:, ind) ~= alpha) .* (all_neighbours(:, ind) ~= beta)))' + 5000; ...
-                        reshape((b .* (all_neighbours(:, ind)' ~= repmat(flat(ind), 1, neighbours_count))).', 1, [])'];
+            weights = [ (alpha_prob + b * sum((all_neighbours(:, ind) ~= alpha) .* (all_neighbours(:, ind) ~= beta)))' + 5000; ...
+                        (beta_prob  + b * sum((all_neighbours(:, ind) ~= alpha) .* (all_neighbours(:, ind) ~= beta)))' + 5000; ...
+                        b * reshape((all_neighbours(:, ind)' ~= repmat(flat(ind), 1, neighbours_count)).', 1, [])'];
                     
             % remove duplicated edges
             non_empty_links = find(t~=0); 
@@ -105,9 +105,7 @@ end
 
 posterior = zeros(L, flatsize);
 for i=1:L
-   posterior(i, :) = exp(-logprobs(i) + sum(b' .* (all_neighbours ~= i)));
+   posterior(i, :) = exp(-logprobs(i, :) - b * sum(all_neighbours ~= i));
 end
-norm_const = sum(posterior);
-for i=1:L
-    posterior(i, :) = posterior(i, :) ./ norm_const;
-end
+norm_const = sum(posterior, 1);
+posterior = bsxfun(@rdivide,posterior,norm_const);
