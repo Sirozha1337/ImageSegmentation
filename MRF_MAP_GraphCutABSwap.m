@@ -58,8 +58,8 @@ for i=1:MAP_iter
             beta_prob = logprobs(beta, ind);
             
             % construct vector of weights
-            weights = [ (alpha_prob + b * sum((all_neighbours(:, ind) ~= alpha) .* (all_neighbours(:, ind) ~= beta)))' + 5000; ...
-                        (beta_prob  + b * sum((all_neighbours(:, ind) ~= alpha) .* (all_neighbours(:, ind) ~= beta)))' + 5000; ...
+            weights = [ (alpha_prob + b * sum((all_neighbours(:, ind) ~= alpha) .* (all_neighbours(:, ind) ~= beta)))'; ...
+                        (beta_prob  + b * sum((all_neighbours(:, ind) ~= alpha) .* (all_neighbours(:, ind) ~= beta)))'; ...
                         b * reshape((all_neighbours(:, ind)' ~= repmat(flat(ind), 1, neighbours_count)).', 1, [])'];
                     
             % remove duplicated edges
@@ -73,6 +73,12 @@ for i=1:MAP_iter
             [~, uniq_ind, ~] = unique(sort(combo,2), 'rows');
             s = s(uniq_ind);
             t = t(uniq_ind);
+            % add min weight only to the t-links
+            min_weight = min(weights(1:(numel(ind)*2)));
+            if min_weight < 0
+                fprintf('\t\tSome weight is lower than zero: %f\n', min_weight);
+                weights(1:(numel(ind)*2)) = weights(1:(numel(ind)*2)) - min_weight;
+            end
             weights = weights(non_empty_links);
             weights = weights(non_self_ref_links);
             weights = weights(uniq_ind);
