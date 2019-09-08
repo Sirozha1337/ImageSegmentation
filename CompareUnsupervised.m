@@ -1,7 +1,7 @@
 % Set parameters for random generation
-%Size = 300;
-%p = 10;
-%k = 3;
+Size = 300;
+p = 10;
+k = 3;
 
 %D = vmffactory(p);
 %kappas = repmat(10, 1, k);
@@ -41,6 +41,10 @@ for i=1:k
 end
 posterior_kmeans = CalculateLikelihoodProbabilities(data, k, kappas_kmeans, mus_kmeans);
 auc_kmeans = AUC(gt, posterior_kmeans, k, 90000);
+
+[Q, X] = MeanFieldIsing(reshape(data, [Size, Size, p]), p, close_kappas, close_mus, 0.5, 2, 3, 50, 4);
+dsc_mfi = SimilarityScore(gt, X, k);
+s_dsc_mfi = SimpleSimilarityScore(gt, X, k);
 
 % Grab Cut
 [final_segm_grc, mus_grc, kappas_grc, ...
@@ -83,7 +87,7 @@ s_dsc_swap = SimpleSimilarityScore(gt, final_segm_swap, k);
 %SaveImage(reshape(mkm, [Size,Size]), 'data/sim_kmeans.png');
 %SaveImage(reshape(mem, [Size,Size]), 'data/sim_em.png');
 %SaveImage(reshape(final_segm_mcem, [Size,Size]), 'data/sim_mcem.png');
-%SaveImage(reshape(final_segm_grc, [Size,Size]), 'data/sim_grc.png');
+%SaveImage(reshape(s_grc, [Size,Size]), 'data/sim_grc.png');
 %SaveImage(mean(reshape(data, [Size,Size, p]), 3), 'data/sim_data.png');
 
 % Saving plots
