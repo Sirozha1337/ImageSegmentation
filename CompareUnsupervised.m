@@ -42,7 +42,8 @@ end
 posterior_kmeans = CalculateLikelihoodProbabilities(data, k, kappas_kmeans, mus_kmeans);
 auc_kmeans = AUC(gt, posterior_kmeans, k, 90000);
 
-[Q, X] = MeanFieldIsing(reshape(data, [Size, Size, p]), p, close_kappas, close_mus, 0.5, 2, 3, 50, 4);
+% Mean Field
+[Q, X] = MeanFieldIsing(reshape(data, [Size, Size, p]), p, close_kappas, close_mus, 0.5, 2, 3, 50, 20, 4);
 dsc_mfi = SimilarityScore(gt, X, k);
 s_dsc_mfi = SimpleSimilarityScore(gt, X, k);
 

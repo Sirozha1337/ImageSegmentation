@@ -8,13 +8,14 @@
 %   b: параметр модели Поттса
 %   L: количество классов
 %   MAP_iter: максимальное количество итераций
+%   INNER_iter: максимальное количество внутренних итераций
 %   neighbours_count: количество соседей, доступные значения
 %   2-D: 4, 8, 16
 %   3-D: 6, 26
 %---output--------------------------------------------------------
 %   Q: матрица вероятности принадлежности к классу
 %   X: матрица финальной сегментации
-function [Q, X]=MeanFieldIsing(Y,p,kappa,mu,lambda,b,L,MAP_iter,neighbours_count)
+function [Q, X]=MeanFieldIsing(Y,p,kappa,mu,lambda,b,L,MAP_iter,INNER_iter,neighbours_count)
 
 sz = size(Y);
 flatsize = prod(sz(1:end-1));
@@ -23,19 +24,14 @@ flat = reshape(Y, [flatsize, p]);
 % neighbours indexes
 all_neighbours_ind = GetNeighbours(sz(1:end-1), neighbours_count);
 
-Q = zeros(flatsize, L);
-Q(:, 1) = ones(flatsize, 1);
 for i=1:MAP_iter
     [~, logprobs] = CalculateLikelihoodProbabilities(flat, L, kappa, mu);
-    for index=1:flatsize
-        Qtilde = zeros(L, 1);
-        for l=1:L
-            Qtilde(l) = exp(b*sum(Q(all_neighbours_ind(:,index), l))-logprobs(l, index));
-        end
-        sumQ = sum(Qtilde);
-        for l=1:L
-            Q(index, l) = (1-lambda)*Q(index, l)+lambda*Qtilde(l)/sumQ;
-        end
+    Q = zeros(flatsize, L);
+    Q(:, 1) = ones(flatsize, 1);
+    for u=1:INNER_iter
+        Qtilde = exp(b*squeeze(sum(reshape(Q(all_neighbours_ind, :), [neighbours_count, flatsize, L]), 1))-logprobs');
+        sumQ = sum(Qtilde, 2);
+        Q = (1-lambda) * Q + lambda * Qtilde ./ sumQ;
     end
     for l=1:L
         R = Q(:, l)'*flat;
@@ -44,9 +40,8 @@ for i=1:MAP_iter
             mu(l, :) = R / Rlen;
         end
         
-        eqn = @(x) besseli(p/2, x)/besseli(p/2-1,x) * R - Rlen;
+        eqn = @(x) besseli(p/2, x)/besseli(p/2-1,x) * sum(Q(:, l)) - Rlen;
         initval = kappa(l);
-        
         opts1 =  optimset('display','off');
         kappa(l) = lsqnonlin(eqn, initval, 0, Inf, opts1);
     end
