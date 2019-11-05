@@ -22,19 +22,25 @@ for l=1:k
         R = R + sum(X(Y(i, :)==l, :));
         N = N + sum(Y(i, :)==l);
     end
-    if R ~= 0
-        mu(l, :) = R / sqrt(sum(R .^ 2));
+    R_mod = sqrt(sum(R .^ 2));
+    if R_mod ~= 0
+        mu(l, :) = R / R_mod;
     end
-    
-    eqn = @(x) besseli(p/2, x)/besseli(p/2-1,x) * N / M - sqrt(sum(R .^ 2)) / M;
+    eqn = @(x) min(besseli(p/2, x), 10^100)/min(besseli(p/2-1,x), 10^100) * N / M - R_mod / M;
     initval = kappa(l);
     if isnan(eqn(initval))
         fprintf('WARNING: function is NaN in initial point\n')
         initval = 10;
     end
-    kappa(l) = fzero(eqn, initval);
-    if kappa(l) < 0 || isnan(kappa(l))
+    opts1 =  optimset('display','off');
+    kappa(l) =  lsqnonlin(eqn, initval, 0, Inf, opts1);
+    if kappa(l) < 0
         kappa(l) = abs(kappa(l));
         fprintf('WARNING: Lower than zero solution was found\n')
+    end
+    
+    if isnan(kappa(l))
+        kappa(l) = initval;
+        fprintf('WARNING: NaN solution was found\n')
     end
 end

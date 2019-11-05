@@ -1,7 +1,7 @@
 %%  Алгоритм последовательной оценки параметров посредством генерации выборки из схемы Гиббса
 %---input---------------------------------------------------------
 %   data: исходные данные, матрица NxP, N - количество пикселей
-%   dim: размер матрицы финальной сегментации
+%   segment: матрица начальной сегментации
 %   k: количество меток
 %   lambda: параметр сглаживания
 %   sigma: параметр сглаживания
@@ -32,7 +32,7 @@ for i=1:max_iter
     all_mus(i, :, :) = mus;
     all_kappas(i, :) = kappas;
     % считаем вероятности
-    [~, logprobs] = CalculateLikelihoodProbabilities(data, k, kappas, mus);
+    [~, logprobs] = CalculateLikelihoodProbabilities(data, k, kappas, mus, segment);
     % считаем Bpq
     %Neighbours = GetNeighbours(dim, neighbours_count);
     %Bpq = lambda * exp(sum((repmat(data, neighbours_count, 1)-data(Neighbours, :)).^2, 2)./(2*sigma^2));

@@ -19,14 +19,14 @@ all_neighbours_ind = GetNeighbours(sz, neighbours_count);
 Y = zeros(M, flatsz);
 for j=1:(B+M)
     permutations = randperm(flatsz);
-    for i=permutations
+    for i=permutations(Yinit(permutations)~=0)
        P = zeros(1, k);
        pex = zeros(1, k);
        for l=1:k
            neighbours = all_neighbours_ind(all_neighbours_ind(:, i)~=i, i);
            neib = -beta * sum(Yflat(neighbours)~=l);
            lik = kappa(l) * mu(l, :) * X(i, :)'-log(C(p, kappa(l)));
-           pex(l) = exp(neib + lik);
+           pex(l) = min(exp(neib + lik), 10^100);
        end
        for l=1:k
            P(l) = pex(l)/sum(pex);

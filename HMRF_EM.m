@@ -19,16 +19,17 @@
 %   beta: оцененное значение beta
 %   mus: оцененное значение mus
 %   kappas: оцененное значение kappas
-function [sample, beta, mus, kappas, all_mus, all_kappas] = HMRF_EM(data, dim, k, beta, mus, kappas, map_iter, max_iter, neighbours_count, method)
+function [sample, beta, mus, kappas, all_mus, all_kappas] = HMRF_EM(data, segment_init, k, beta, mus, kappas, map_iter, max_iter, neighbours_count, method)
 
 p = size(data, 2);
 all_mus = zeros([max_iter, size(mus)]);
 all_kappas = zeros([max_iter, size(kappas)]);
 for i=1:max_iter
+    fprintf('\tIteration: %d out of %d\n',i,max_iter);
     % считаем вероятности
-    [~, logprobs] = CalculateLikelihoodProbabilities(data, k, kappas, mus);
+    [~, logprobs] = CalculateLikelihoodProbabilities(data, k, kappas, mus, segment_init);
     % генерируем начальную конфигурацию
-    segment_init = randi(k, dim);
+    %segment_init = randi(k, dim);
     % ищем MAP-оценку
     switch method
         case "expansion"
