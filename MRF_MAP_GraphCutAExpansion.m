@@ -29,13 +29,13 @@ minimum_U = Inf;
 
 for i=1:MAP_iter
     success = 0;
-    fprintf('\tInner Iteration: %d\n',i);
+    fprintf('\tInner Iteration: %d out of %d\n',i,MAP_iter);
     fprintf('\tCurrent U: %d\n',minimum_U);
     %permutations = randperm(size(abcomb, 1));
     for alpha=1:L%permutations
         % vector of vertex indexes that are labeled as alpha or beta
         ind_alpha = find(flat == alpha);
-        ind_other = find(flat ~= alpha);
+        ind_other = find(flat ~= alpha & flat ~= 0);
         
         if size(ind_other, 1) > 0
             % создаем дополнительные вершины и ребра 
@@ -106,10 +106,10 @@ for i=1:MAP_iter
             s = s(uniq_ind);
             t = t(uniq_ind);
             % add min weight only to the t-links
-            min_weight = min(weights(1:(numel(flat)*2)));
+            min_weight = min(weights(1:(2 * numel(ind_alpha) + 2 * numel(ind_other))));
             if min_weight < 0
                 fprintf('\t\tSome weight is lower than zero: %f\n', min_weight);
-                weights(1:(numel(flat)*2)) = weights(1:(numel(flat)*2)) - min_weight;
+                weights(1:(2 * numel(ind_alpha) + 2 * numel(ind_other))) = weights(1:(2 * numel(ind_alpha) + 2 * numel(ind_other))) - min_weight;
             end
             weights = weights(non_empty_links);
             weights = weights(non_self_ref_links);
@@ -125,6 +125,7 @@ for i=1:MAP_iter
                 minimum_U = sum_U;
                 % update image according to maxflow list of vertices
                 ct = ct(ct < terminal0);
+                ct = ct(flat(ct)~=0);
                 flat(ct) = alpha;
                 X(ct) = alpha;
                 success = 1;
@@ -138,7 +139,18 @@ end
 
 posterior = zeros(L, flatsize);
 for i=1:L
-   posterior(i, :) = exp(-logprobs(i, :) - b * sum(all_neighbours ~= i));
+   posterior(i, :) = min(exp(-logprobs(i, :) - b * sum(all_neighbours ~= i)), 10^100);
+   posterior(i, X==0) = 0;
+end
+if(any(isnan(posterior(:))))
+   fprintf('WARNING: posterior is NaN\n');
 end
 norm_const = sum(posterior, 1);
+if(any(norm_const(:)==0) || any(isnan(norm_const(:))))
+   fprintf('WARNING: norm const is zero\n');
+   norm_const(norm_const==0) = 10^-100;
+end
 posterior = bsxfun(@rdivide,posterior,norm_const);
+if(any(isnan(posterior(:))))
+   fprintf('WARNING: posterior is NaN\n');
+end

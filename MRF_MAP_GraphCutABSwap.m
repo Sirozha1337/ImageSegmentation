@@ -112,6 +112,7 @@ end
 posterior = zeros(L, flatsize);
 for i=1:L
    posterior(i, :) = exp(-logprobs(i, :) - b * sum(all_neighbours ~= i));
+   posterior(i, X==0) = 0;
 end
 norm_const = sum(posterior, 1);
 posterior = bsxfun(@rdivide,posterior,norm_const);
