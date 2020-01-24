@@ -147,8 +147,8 @@ if(any(isnan(posterior(:))))
 end
 norm_const = sum(posterior, 1);
 if(any(norm_const(:)==0) || any(isnan(norm_const(:))))
-   fprintf('WARNING: norm const is zero\n');
-   norm_const(norm_const==0) = 10^-100;
+   fprintf('WARNING: norm const is zero or Nan\n');
+   norm_const(norm_const==0 | isnan(norm_const)) = 1;
 end
 posterior = bsxfun(@rdivide,posterior,norm_const);
 if(any(isnan(posterior(:))))
