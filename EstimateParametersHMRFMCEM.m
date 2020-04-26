@@ -26,7 +26,7 @@ for l=1:k
     if R_mod ~= 0
         mu(l, :) = R / R_mod;
     end
-    eqn = @(x) min(besseli(p/2, x), 10^100)/min(besseli(p/2-1,x), 10^100) * N / M - R_mod / M;
+    eqn = @(x) besseli(p/2, x, 1)/besseli(p/2-1, x, 1) * N / M - R_mod / M;
     initval = kappa(l);
     if isnan(eqn(initval))
         fprintf('WARNING: function is NaN in initial point\n')

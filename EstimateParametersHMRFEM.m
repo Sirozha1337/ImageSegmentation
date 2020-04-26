@@ -20,7 +20,7 @@ for l=1:k
         mu(l, :) = R / Rlen;
     end
     
-    eqn = @(x) min(besseli(p/2, x), 10^100)/min(besseli(p/2-1,x), 10^100) * sum(posterior(l,Y==l)) - Rlen;
+    eqn = @(x) besseli(p/2, x, 1)/besseli(p/2-1,x, 1) * sum(posterior(l,Y==l)) - Rlen;
     initval = kappa(l);
     if isnan(eqn(initval))
         fprintf('WARNING: function is NaN in initial point\n')
