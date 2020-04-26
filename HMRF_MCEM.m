@@ -31,7 +31,8 @@ segment_init(mask==0) = 0;
 for i=1:max_iter
     fprintf('\tHRMF MCEM Iteration: %d of %d\n',i,max_iter);
     % генерируем выборку из схемы Гиббса 
-    [samples] = GibbsSamplerVMF(data, segment_init, burn_in, sample_num, k, p, beta, mus, kappas, neighbours_count);
+    [~, logprobs] = CalculateLikelihoodProbabilities(data, k, kappas, mus, mask);
+    [samples] = GibbsSamplerLabelCost(segment_init, burn_in, sample_num, k, beta, logprobs, neighbours_count);
     % подстраиваем параметры
     [beta, mus, kappas] = EstimateParametersHMRFMCEM(data, samples, k, p, beta, mus, kappas);
     % генерируем начальную конфигурацию
