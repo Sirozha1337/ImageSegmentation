@@ -1,6 +1,11 @@
 # ImageSegmentation
 Matlab Image Segmentation scripts
 
+## Required packages
+* SPM12: https://www.fil.ion.ucl.ac.uk/spm/software/spm12/
+* MixEst: https://github.com/utvisionlab/mixest
+* GCO (used only in TestGCO.m): https://vision.cs.uwaterloo.ca/code/
+
 ## Experiments
 ### FMRI
 * **prepros_nyu_data.R** -- preprocess NYU fmri data (https://www.nitrc.org/projects/nyu_trt)
