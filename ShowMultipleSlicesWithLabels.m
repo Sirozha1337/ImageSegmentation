@@ -4,7 +4,7 @@
 %
 %---output--------------------------------------------------------
 %
-function [] = ShowMultipleSlicesWithLabels(image, labels, directions, slice_nums, titles)
+function [currentFigure] = ShowMultipleSlicesWithLabels(image, labels, directions, slice_nums, titles)
 
 len = numel(directions);
 
@@ -19,3 +19,4 @@ currentFigure = gcf;
 for i=1:len
     title(currentFigure.Children(len-i+1), titles(i));
 end
+
